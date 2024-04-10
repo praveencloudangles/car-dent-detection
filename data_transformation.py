@@ -12,78 +12,6 @@ from albumentations.pytorch import ToTensorV2
 from torchvision import transforms as transforms
 import dill as pickle
 
-def transform_data():
-    # Define the training tranforms
-    def get_train_aug():
-        return A.Compose([
-            A.MotionBlur(blur_limit=3, p=0.5),
-            A.Blur(blur_limit=3, p=0.5),
-            A.RandomBrightnessContrast(
-                brightness_limit=0.2, p=0.5
-            ),
-            A.ColorJitter(p=0.5),
-            # A.Rotate(limit=10, p=0.2),
-            A.RandomGamma(p=0.2),
-            A.RandomFog(p=0.2),
-            # A.RandomSunFlare(p=0.1),
-            # `RandomScale` for multi-res training,
-            # `scale_factor` should not be too high, else may result in 
-            # negative convolutional dimensions.
-            # A.RandomScale(scale_limit=0.15, p=0.1),
-            # A.Normalize(
-            #     (0.485, 0.456, 0.406),
-            #     (0.229, 0.224, 0.225)
-            # ),
-            ToTensorV2(p=1.0),
-        ], bbox_params={
-            'format': 'pascal_voc',
-            'label_fields': ['labels']
-        })
-
-    def get_train_transform():
-        return A.Compose([
-            # A.Normalize(
-            #     (0.485, 0.456, 0.406),
-            #     (0.229, 0.224, 0.225)
-            # ),
-            ToTensorV2(p=1.0),
-        ], bbox_params={
-            'format': 'pascal_voc',
-            'label_fields': ['labels']
-        })
-
-    # Define the validation transforms
-    def get_valid_transform():
-        return A.Compose([
-            # A.Normalize(
-            #     (0.485, 0.456, 0.406),
-            #     (0.229, 0.224, 0.225)
-            # ),
-            ToTensorV2(p=1.0),
-        ], bbox_params={
-            'format': 'pascal_voc', 
-            'label_fields': ['labels']
-        })
-
-    IMAGE_WIDTH = 640
-    IMAGE_HEIGHT = 480
-    classes = ['Dent', 'Shatter']
-    # Create datasets
-    train_dataset = CustomDataset(os.path.join(os.getcwd(),"Damage tensorflow/train/images/"),os.path.join(os.getcwd(),"Damage tensorflow/train/annotations/"), os.path.join(os.getcwd(),"Damage tensorflow/train/labels/"), IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_train_transform())
-    print("one-------------",train_dataset)
-    valid_dataset = CustomDataset(os.path.join(os.getcwd(),"Damage tensorflow/valid/images/"),os.path.join(os.getcwd(),"Damage tensorflow/valid/annotations/"), os.path.join(os.getcwd(),"Damage tensorflow/valid/labels/"),IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_valid_transform())
-    print("-------------",valid_dataset)
-    i, a = train_dataset[0]
-    print("iiiiii:",i)
-    print("aaaaa:",a)
-    with open('train_dataset.pkl', 'wb') as f:
-        pickle.dump(train_dataset, f)
-    with open('valid_dataset.pkl', 'wb') as f:
-        pickle.dump(valid_dataset, f)
-
-    return train_dataset
-    
-
 
 class CustomDataset(Dataset):
     def __init__(
@@ -301,6 +229,76 @@ class CustomDataset(Dataset):
     def __len__(self):
         return len(self.all_images)
 
-    
+
+def transform_data():
+    # Define the training tranforms
+    def get_train_aug():
+        return A.Compose([
+            A.MotionBlur(blur_limit=3, p=0.5),
+            A.Blur(blur_limit=3, p=0.5),
+            A.RandomBrightnessContrast(
+                brightness_limit=0.2, p=0.5
+            ),
+            A.ColorJitter(p=0.5),
+            # A.Rotate(limit=10, p=0.2),
+            A.RandomGamma(p=0.2),
+            A.RandomFog(p=0.2),
+            # A.RandomSunFlare(p=0.1),
+            # `RandomScale` for multi-res training,
+            # `scale_factor` should not be too high, else may result in 
+            # negative convolutional dimensions.
+            # A.RandomScale(scale_limit=0.15, p=0.1),
+            # A.Normalize(
+            #     (0.485, 0.456, 0.406),
+            #     (0.229, 0.224, 0.225)
+            # ),
+            ToTensorV2(p=1.0),
+        ], bbox_params={
+            'format': 'pascal_voc',
+            'label_fields': ['labels']
+        })
+
+    def get_train_transform():
+        return A.Compose([
+            # A.Normalize(
+            #     (0.485, 0.456, 0.406),
+            #     (0.229, 0.224, 0.225)
+            # ),
+            ToTensorV2(p=1.0),
+        ], bbox_params={
+            'format': 'pascal_voc',
+            'label_fields': ['labels']
+        })
+
+    # Define the validation transforms
+    def get_valid_transform():
+        return A.Compose([
+            # A.Normalize(
+            #     (0.485, 0.456, 0.406),
+            #     (0.229, 0.224, 0.225)
+            # ),
+            ToTensorV2(p=1.0),
+        ], bbox_params={
+            'format': 'pascal_voc', 
+            'label_fields': ['labels']
+        })
+
+    IMAGE_WIDTH = 640
+    IMAGE_HEIGHT = 480
+    classes = ['Dent', 'Shatter']
+    # Create datasets
+    train_dataset = CustomDataset(os.path.join(os.getcwd(),"Damage tensorflow/train/images/"),os.path.join(os.getcwd(),"Damage tensorflow/train/annotations/"), os.path.join(os.getcwd(),"Damage tensorflow/train/labels/"), IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_train_transform())
+    print("one-------------",train_dataset)
+    valid_dataset = CustomDataset(os.path.join(os.getcwd(),"Damage tensorflow/valid/images/"),os.path.join(os.getcwd(),"Damage tensorflow/valid/annotations/"), os.path.join(os.getcwd(),"Damage tensorflow/valid/labels/"),IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_valid_transform())
+    print("-------------",valid_dataset)
+    i, a = train_dataset[0]
+    print("iiiiii:",i)
+    print("aaaaa:",a)
+    with open('train_dataset.pkl', 'wb') as f:
+        pickle.dump(train_dataset, f)
+    with open('valid_dataset.pkl', 'wb') as f:
+        pickle.dump(valid_dataset, f)
+
+    return train_dataset   
 
 transform_data()
